@@ -1,16 +1,8 @@
 # charmJava
 
-====For simple web-socket connections:
-1 - run CharmBackServerRunnerSocket
-2 - run CharmBackClientRunnerSocket
+Simple native HTTP controller:
 
-type on client:
-for create new item ->  save value1,value2,value3,value4
-for get all data ->  findAll
-for find item by id  -> findById 1
-for delete by id -> deleteById 1
-
-===For simple HTTP connection:
-1 - run CharmHttpServerRunner
-2 - run CharmHttpClientRunner
+1 - run CharmBackClientRunner
+2 - run CharmBackServerRunner
+ - 
  - automatically win execute row HTTP request

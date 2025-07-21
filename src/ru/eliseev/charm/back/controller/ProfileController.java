@@ -3,88 +3,75 @@ package ru.eliseev.charm.back.controller;
 import ru.eliseev.charm.back.model.Profile;
 import ru.eliseev.charm.back.service.ProfileService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 public class ProfileController {
-    private final ProfileService profileService;
-    public ProfileController(ProfileService profileService) {
-        this.profileService = profileService;
-    }
+    private final ProfileService service;
 
-    public String findAll() {
-        Profile profileDto = new Profile();
-        List<Profile> savedProfile = profileService.findAll();
-        return savedProfile.toString();
-    }
-
-    public String findById(String id) {
-        if (id == null) return Optional.empty().toString();
-        Long evaluatedId;
-        try {
-            evaluatedId = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            return "Id is incorrect";
-        }
-        Optional<Profile> maybeProfile = profileService.findById(evaluatedId);
-        if (maybeProfile.isEmpty()){
-            return "not found";
-        }
-        return maybeProfile.get().toString();
-    }
-
-
-
-
-    public String updateById(String id) {
-        if (id == null) return Optional.empty().toString();
-        Long evaluatedId;
-        try {
-            evaluatedId = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            return "Id is incorrect";
-        }
-        Optional<Profile> maybeProfile = profileService.findById(evaluatedId);
-        if (maybeProfile.isEmpty()){
-            return "not found";
-        }
-
-        return maybeProfile.get().toString();
-    }
-
-
-
-
-
-    public String deleteById(String id) {
-        if (id == null) return Optional.empty().toString();
-        Long evaluatedId;
-        try {
-            evaluatedId = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            return "Id is incorrect";
-        }
-        Boolean isDeleted = profileService.delete(evaluatedId);
-        return isDeleted.toString();
+    public ProfileController(ProfileService service) {
+        this.service = service;
     }
 
     public String save(String request) {
-        String[] params = request.split(",");
-        if (params.length < 4){
-            return "bad request";
-        }
-        Profile profileDto = new Profile();
-        System.out.println("requestData");
-        profileDto.setEmail(params[0]);
-        profileDto.setName(params[0]);
-        profileDto.setSurname(params[2]);
-        profileDto.setAbout(params[3]);
-        Profile savedProfile = profileService.save(profileDto);
-        return savedProfile.toString();
+        String[] strings = request.split(",");
+        if (strings.length != 4) return "Bad request: need 4 parameters to save profile.";
+
+        Profile profile = new Profile();
+        profile.setEmail(strings[0]);
+        profile.setName(strings[1]);
+        profile.setSurname(strings[2]);
+        profile.setAbout(strings[3]);
+
+        return service.save(profile).toString();
     }
 
+    public Optional<Profile> findById(Long id) {
+        return service.findById(id);
+    }
 
+    public List<Profile> findAll() {
+        return service.findAll();
+    }
 
+    public String update(String request) {
+        String[] strings = request.split(",");
+        if (strings.length != 5) return "Bad request: need 5 parameters to update profile.";
+
+        long id;
+        try {
+            id = Long.parseLong(strings[0]);
+        } catch (NumberFormatException e) {
+            return "Bad request: can`t parse string [" + strings[0] + "] to long.";
+        }
+
+        Profile profile = new Profile();
+        profile.setId(id);
+        profile.setEmail(strings[1]);
+        profile.setName(strings[2]);
+        profile.setSurname(strings[3]);
+        profile.setAbout(strings[4]);
+
+        service.update(profile);
+
+        return "Update success";
+    }
+
+    public String delete(String request) {
+        String[] strings = request.split(",");
+        if (strings.length != 1) return "Bad request: need one number parameter";
+
+        long id;
+        try {
+            id = Long.parseLong(strings[0]);
+        } catch (NumberFormatException e) {
+            return "Bad request: can`t parse string [" + strings[0] + "] to long.";
+        }
+
+        boolean result = service.delete(id);
+
+        if (!result) return "Not found";
+
+        return "Delete success";
+    }
 }
