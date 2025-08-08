@@ -1,6 +1,7 @@
 package ru.eliseev.charm.back;
 
 import ru.eliseev.charm.back.controller.LikeController;
+import ru.eliseev.charm.back.controller.PdfController;
 import ru.eliseev.charm.back.controller.ProfileController;
 import ru.eliseev.charm.back.dao.ProfileDao;
 import ru.eliseev.charm.back.service.ProfileService;
@@ -10,8 +11,9 @@ public class CharmBackServerRunner {
 
         ProfileController profileController = new ProfileController(new ProfileService(new ProfileDao()));
         LikeController likeController = new LikeController();
+        PdfController pdfController = new PdfController();
 
-        CharmHttpServer charmHttpServer = new CharmHttpServer(8080, 5, profileController, likeController);
+        CharmHttpServer charmHttpServer = new CharmHttpServer(8080, 5, profileController, likeController, pdfController);
         charmHttpServer.start();
     }
 }
